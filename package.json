@@ -1,0 +1,29 @@
+{
+  "name": "TwitchHoister",
+  "version": "1.0.0",
+  "description": "Hoists currenty streaming users on Discord.",
+  "main": "hoister.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .",
+    "fix": "npx eslint . --fix",
+    "lint": "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/detjensrobert/TwitchHoisterBot.git"
+  },
+  "author": "Robert Detjens / wholewheatbagels",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/detjensrobert/TwitchHoisterBot/issues"
+  },
+  "homepage": "https://github.com/detjensrobert/TwitchHoisterBot#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "pm2": "^4.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
+}

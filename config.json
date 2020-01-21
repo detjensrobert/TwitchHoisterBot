@@ -1,0 +1,16 @@
+{
+	"prefix": "!streamer",
+	
+	"colors": {
+		"success": "#4CAF50",
+		"error": "#f44336",
+		"info": "#2196F3",
+		"warn": "#FFC107"
+	},
+	
+	"roles": {
+		"moderator": "652410392038866944",
+		"streaming": "669033737413066771"
+	}
+
+}
