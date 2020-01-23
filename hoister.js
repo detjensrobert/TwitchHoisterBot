@@ -126,7 +126,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	}
 
 	// if started streaming S&S
-	if (newMember.presence.game && newMember.presence.game.state == 'Pokémon Sword/Shield') {
+	if (newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
 		console.log("member started streaming at ", newMember.presence.game.url);
 		// add streamer role
 		if (streamers.has(newMember.id)) {
@@ -136,7 +136,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	}
 
 	// if stopped streaming OR is no longer streaming Pk S&S
-	if (oldMember.presence.game && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
+	if (oldMember.presence.game && newMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
 		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
 		console.log("member stopped streaming");
 		// remove streamer role
