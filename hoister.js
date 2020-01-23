@@ -9,12 +9,23 @@ const fs = require('fs');
 const { token } = require('./token.json');
 const config = require('./config.json');
 
+// load saved streamers from file (or template if no file)
+let streamers;
+if (fs.existsSync('./streamers.json')) {
+	console.log("[ START ] Loading streamers from file...");
+	streamers = new Map(require('./streamers.json'));
+}
+else {
+	console.log("[ START ] No streamers file found, using blank template...");
+	streamers = new Map();
+}
+
 // import commands from dir
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-	const command = require("./commands/" + file);
+	const command = require('./commands/' + file);
 	client.commands.set(command.name, command);
 
 	console.log("[ START ] Added command: " + command.name);
@@ -33,16 +44,16 @@ client.once('ready', () => {
 client.on('message', message => {
 
 	// ignore messages that dont start with a valid prefix
-	if (!message.content.startsWith(config.prefix)) { return; }
+	if (!message.content.startsWith(config.prefix)) return;
 
 	// ignore bot messages
-	if (message.author.bot) { return; }
+	if (message.author.bot) return;
 
 	// ignore DMs
-	if (message.channel.type !== "text") { return; }
+	if (message.channel.type !== "text") return;
 
 	// ignore messages not in specified channels, if given
-	if (config.restrictToChannels && !config.restrictToChannels.includes(message.channel.id)) { return; }
+	if (config.restrictToChannels && !config.restrictToChannels.includes(message.channel.id)) return;
 
 	// turn message into array
 	const args = message.content.trim().slice(config.prefix.length).split(/ +/);
@@ -94,7 +105,43 @@ client.on('message', message => {
 	}
 
 	// since everything's ok, execute command
-	command.execute(message, args);
+	command.execute(message, args, streamers);
+
+});
+
+
+// listen for user presence updates
+client.on('presenceUpdate', (oldMember, newMember) => {
+
+	console.log("\n----------------------------------------------------\npresence update for " + oldMember.user.username);
+	console.log("OLD:");
+	console.log({ ...oldMember.presence });
+	if (oldMember.game) {
+		console.log({ ...oldMember.presence.game });
+	}
+	console.log("----------------------\nNEW:");
+	console.log({ ...newMember.presence });
+	if (newMember.game) {
+		console.log({ ...newMember.presence.game });
+	}
+
+	// if started streaming S&S
+	if (newMember.presence.game && newMember.presence.game.state == 'Pokémon Sword/Shield') {
+		console.log("member started streaming at ", newMember.presence.game.url);
+		// add streamer role
+		if (streamers.has(newMember.id)) {
+			streamers.set(newMember.id, newMember.presence.game.url);
+		}
+		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
+	}
+
+	// if stopped streaming OR is no longer streaming Pk S&S
+	if (oldMember.presence.game && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
+		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
+		console.log("member stopped streaming");
+		// remove streamer role
+		newMember.removeRole(newMember.guild.roles.get(config.roles.streaming));
+	}
 
 });
 
