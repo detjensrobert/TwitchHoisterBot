@@ -112,7 +112,10 @@ client.on('message', message => {
 
 // listen for user presence updates
 client.on('presenceUpdate', (oldMember, newMember) => {
-
+	
+	// ignore users not being watched
+	if (!streamers.has(newMember.id)) return;
+	
 	console.log("\n----------------------------------------------------\npresence update for " + oldMember.user.username);
 	console.log("OLD:");
 	console.log({ ...oldMember.presence });
@@ -125,21 +128,17 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 		console.log({ ...newMember.presence.game });
 	}
 
-	// if started streaming S&S
+	// if started streaming S&S, add role & set twitch url
 	if (newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
 		console.log("member started streaming at ", newMember.presence.game.url);
-		// add streamer role
-		if (streamers.has(newMember.id)) {
-			streamers.set(newMember.id, newMember.presence.game.url);
-		}
+		streamers.set(newMember.id, newMember.presence.game.url);
 		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
 	}
 
-	// if stopped streaming OR is no longer streaming Pk S&S
-	if (oldMember.presence.game && newMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
+	// if stopped streaming OR is no longer streaming Pk S&S, remove role
+	if (oldMember.presence.game && oldMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
 		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
 		console.log("member stopped streaming");
-		// remove streamer role
 		newMember.removeRole(newMember.guild.roles.get(config.roles.streaming));
 	}
 
