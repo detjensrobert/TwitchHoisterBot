@@ -112,17 +112,17 @@ client.on('message', message => {
 
 // listen for user presence updates
 client.on('presenceUpdate', (oldMember, newMember) => {
-	
+
 	// ignore users not being watched
 	if (!streamers.has(newMember.id)) return;
-	
-	console.log("\n----------------------------------------------------\npresence update for " + oldMember.user.username);
+
+	console.log("\n\n----------------------------------------------------\npresence update for " + oldMember.user.username);
 	console.log("OLD:");
 	console.log({ ...oldMember.presence });
 	if (oldMember.game) {
 		console.log({ ...oldMember.presence.game });
 	}
-	console.log("----------------------\nNEW:");
+	console.log("\nNEW:");
 	console.log({ ...newMember.presence });
 	if (newMember.game) {
 		console.log({ ...newMember.presence.game });
