@@ -32,13 +32,13 @@ async function execute(message, args, streamers) {
 
 	console.log(`[ INFO ] Adding user ${user.username} to streamer list`);
 
-	streamers.set(user.id, "[No twitch link found yet]");
+	streamers.push([user.id, ""]);
 
-	// generate array from map, save it to file
-	fs.writeFileSync('./streamers.json', JSON.stringify([...streamers], null, 2));
+	// save new array to file
+	fs.writeFileSync('./streamers.json', JSON.stringify(streamers, null, 2));
 
 	const replyEmbed = new Discord.RichEmbed().setColor(config.colors.success)
-		.setTitle(`Marked ${member ? member.displayName : user.username} as a verified streamer.`);
+		.setTitle(`Added ${member ? member.displayName : user.username} to the verified streamer list.`);
 	return message.channel.send(replyEmbed);
 }
 

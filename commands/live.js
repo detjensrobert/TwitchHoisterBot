@@ -21,14 +21,15 @@ async function execute(message, args, streamers) {
 
 	if (streaming.size > 0) {
 		for (const id of streaming.keys()) {
-			descStr += `<@${id}>: ${streamers.get(id)}\n`;
+			const usn = streamers.find(elem => elem[0] == id)[1];
+			descStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
 		}
 	}
 	else {
-		descStr = "*There's noone live right now :(*";
+		descStr = "*There's noone live right now* :(";
 	}
 
-	const listEmbed = new Discord.RichEmbed().setColor(config.colors.info)
+	const listEmbed = new Discord.RichEmbed().setColor(config.colors.twitch)
 		.setTitle("Currently Streaming")
 		.setDescription(descStr);
 

@@ -16,25 +16,27 @@ async function execute(message, args, streamers) {
 
 	console.log("[ INFO ] Showing streamer list");
 
-	const listEmbed = new Discord.RichEmbed().setColor(config.colors.info)
+	const listEmbed = new Discord.RichEmbed().setColor(config.colors.twitch)
 		.setTitle("Streamer List");
 
 	const streaming = message.guild.roles.get(config.roles.streaming).members;
 
 	if (streaming.size > 0) {
 		let streamingStr = "";
+
 		for (const id of streaming.keys()) {
-			streamingStr += `<@${id}>: ${streamers.get(id)}\n`;
+			const usn = streamers.find(elem => elem[0] == id)[1];
+			streamingStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
 		}
 		listEmbed.addField("Currently Streaming", streamingStr);
 	}
 
-	let streamerStr = "";
-	for (const [id, url] of streamers.entries()) {
-		streamerStr += `<@${id}>: ${url}\n`;
+	let allStr = "";
+	for (const [id, usn] of streamers) {
+		allStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
 	}
 
-	listEmbed.addField("Verified Streamers", streamerStr);
+	listEmbed.addField("Verified Streamers", allStr);
 
 	message.channel.send(listEmbed);
 

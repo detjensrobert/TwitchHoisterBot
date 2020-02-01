@@ -13,11 +13,11 @@ const config = require('./config.json');
 let streamers;
 if (fs.existsSync('./streamers.json')) {
 	console.log("[ START ] Loading streamers from file...");
-	streamers = new Map(require('./streamers.json'));
+	streamers = require('./streamers.json');
 }
 else {
 	console.log("[ START ] No streamers file found, using blank template...");
-	streamers = new Map();
+	streamers = [];
 }
 
 // import commands from dir
@@ -113,32 +113,35 @@ client.on('message', message => {
 // listen for user presence updates
 client.on('presenceUpdate', (oldMember, newMember) => {
 
-	// ignore users not being watched
-	if (!streamers.has(newMember.id)) return;
+	const index = streamers.findIndex(elem => elem[0] == newMember.id);
 
-	console.log("\n\n----------------------------------------------------\npresence update for " + oldMember.user.username);
-	console.log("OLD:");
-	console.log({ ...oldMember.presence });
-	if (oldMember.game) {
-		console.log({ ...oldMember.presence.game });
-	}
-	console.log("\nNEW:");
-	console.log({ ...newMember.presence });
-	if (newMember.game) {
-		console.log({ ...newMember.presence.game });
-	}
+	// ignore users not being watched (not in array)
+	if (index == -1) return;
+
+	// log old and new presence
+	// ~ console.log("\n\npresence update for " + oldMember.user.username);
+	// ~ console.log("OLD:");
+	// ~ console.log({ ...oldMember.presence });
+	// ~ if (oldMember.game) {
+	// ~ console.log({ ...oldMember.presence.game });
+	// ~ }
+	// ~ console.log("\nNEW:");
+	// ~ console.log({ ...newMember.presence });
+	// ~ if (newMember.game) {
+	// ~ console.log({ ...newMember.presence.game });
+	// ~ }
 
 	// if started streaming S&S, add role & set twitch url
 	if (newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
-		console.log("member started streaming at ", newMember.presence.game.url);
-		streamers.set(newMember.id, newMember.presence.game.url);
+		console.log(`[ INFO ] ${newMember.username} started streaming at ${newMember.presence.game.url}`);
 		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
+		streamers[index][1] = newMember.presence.game.url;
 	}
 
 	// if stopped streaming OR is no longer streaming Pk S&S, remove role
 	if (oldMember.presence.game && oldMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
 		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
-		console.log("member stopped streaming");
+		console.log(`[ INFO ] ${newMember.username} stopped streaming`);
 		newMember.removeRole(newMember.guild.roles.get(config.roles.streaming));
 	}
 

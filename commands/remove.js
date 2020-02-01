@@ -31,11 +31,12 @@ async function execute(message, args, streamers) {
 	const member = await message.guild.fetchMember(user);
 
 	console.log(`[ INFO ] Removing user ${user.username} from streamer list`);
+	
+	// remove pair at index of id
+	streamers.splice(streamers.findIndex(elem => elem[0] == user.id), 1);
 
-	streamers.delete(user.id);
-
-	// generate array from map, save it to file
-	fs.writeFileSync('./streamers.json', JSON.stringify([...streamers], null, 2));
+	// save new array to file
+	fs.writeFileSync('./streamers.json', JSON.stringify(streamers, null, 2));
 
 	const replyEmbed = new Discord.RichEmbed().setColor(config.colors.success)
 		.setTitle(`Removed ${member ? member.displayName : user.username} from the streamer list.`);

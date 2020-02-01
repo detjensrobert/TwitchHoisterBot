@@ -5,7 +5,8 @@
 		"success": "#4CAF50",
 		"error": "#f44336",
 		"info": "#2196F3",
-		"warn": "#FFC107"
+		"warn": "#FFC107",
+		"twitch": "#9146ff"
 	},
 	
 	"roles": {
