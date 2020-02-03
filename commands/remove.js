@@ -28,10 +28,18 @@ async function execute(message, args, streamers) {
 	}
 
 	const user = message.mentions.users.first();
+	
+	// if user is not in list
+	if (!streamers.find(elem => elem[0] == user.id)) {
+		const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
+			.setTitle("Oops! User is not in the streamer list.")
+		return message.channel.send(errEmbed);
+	}
+	
 	const member = await message.guild.fetchMember(user);
 
 	console.log(`[ INFO ] Removing user ${user.username} from streamer list`);
-	
+
 	// remove pair at index of id
 	streamers.splice(streamers.findIndex(elem => elem[0] == user.id), 1);
 

@@ -13,7 +13,7 @@ const options = {
 
 async function execute(message, args, streamers) {
 
-	console.log("[ INFO ] Showing streamer list");
+	console.log("[ INFO ] Showing live streamers");
 
 	const streaming = message.guild.roles.get(config.roles.streaming).members;
 
@@ -26,7 +26,7 @@ async function execute(message, args, streamers) {
 		}
 	}
 	else {
-		descStr = "*There's noone live right now* :(";
+		descStr = "*There's noone live right now. :(*";
 	}
 
 	const listEmbed = new Discord.RichEmbed().setColor(config.colors.twitch)

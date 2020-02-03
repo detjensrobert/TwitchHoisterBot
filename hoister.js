@@ -72,7 +72,7 @@ client.on('message', message => {
 
 
 	// role restricted
-	if (command.roleRestrict && !message.member.roles.has(config.roles[`${command.roleRestrict}`])) { return; }
+	if (command.roleRestrict && !message.member.roles.has(config.roles[`${command.roleRestrict}`])) return;
 
 	// argument count
 	if (command.minArgs && args.length < command.minArgs) {
