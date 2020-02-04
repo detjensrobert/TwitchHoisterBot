@@ -15,11 +15,12 @@ async function execute(message, args, streamers) {
 
 	console.log("[ INFO ] Showing live streamers");
 
-	const streaming = message.guild.roles.get(config.roles.streaming).members;
+	const streamingRole = message.guild.roles.get(config.roles.streaming);
+	const streaming = streamingRole ? streamingRole.members : false;
 
 	let descStr = "";
 
-	if (streaming.size > 0) {
+	if (streaming && streaming.size > 0) {
 		for (const id of streaming.keys()) {
 			const usn = streamers.find(elem => elem[0] == id)[1];
 			descStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
