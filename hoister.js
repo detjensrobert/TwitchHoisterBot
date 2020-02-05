@@ -135,7 +135,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	if (newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
 		console.log(`[ INFO ] ${newMember.username} started streaming at ${newMember.presence.game.url}`);
 		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
-		streamers[index][1] = newMember.presence.game.url;
+		streamers[index][1] = newMember.presence.game.url.split('/').pop();
 	}
 
 	// if stopped streaming OR is no longer streaming Pk S&S, remove role
