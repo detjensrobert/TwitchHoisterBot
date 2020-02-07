@@ -1,5 +1,6 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
+const log = require('../utils/log.js');
 
 const options = {
 
@@ -21,7 +22,7 @@ const options = {
 
 async function execute(message) {
 
-	console.log("[ INFO ] Showing help");
+	log.log('INFO', "Showing help");
 
 	const commands = message.client.commands;
 

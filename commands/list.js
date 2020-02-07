@@ -1,5 +1,6 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
+const log = require('../utils/log.js');
 
 const options = {
 
@@ -20,7 +21,7 @@ async function execute(message, args, streamers) {
 	let page = Number.parseInt(args.shift()) - 1;
 	if (isNaN(page)) page = 0;
 
-	console.log("[ INFO ] Showing streamer list at page " + page);
+	log.log('INFO', "Showing streamer list at page " + page);
 
 	// send list at page
 	const replyMsg = await message.channel.send(generateEmbed(message, streamers, page));
@@ -30,31 +31,32 @@ async function execute(message, args, streamers) {
 
 	// allow paging for 1 min
 	const reactFilter = (reaction, user) => !user.bot && (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️');
-	const reactCollector = replyMsg.createReactionCollector(reactFilter, { time: 60*1000 });
-	
+	const reactCollector = replyMsg.createReactionCollector(reactFilter, { time: 60 * 1000 });
+
 	reactCollector.on('collect', (reaction, collector) => {
-		const oldPage = reaction.message.embeds[0].title.match(/\d+ \/ \d+/)[0].match(/^\d+/)[0]-1;
+		const oldPage = reaction.message.embeds[0].title.match(/\d+ \/ \d+/)[0].match(/^\d+/)[0] - 1;
 		let newPage = oldPage;
-		
+
 		// would use boolean addition but it didnt work
 		if (reaction.emoji.name === '➡️') {
 			newPage++;
-		} else {
+		}
+		else {
 			newPage--;
 		}
-		
+
 		newPage = Math.max(newPage, 0); // enforce limits
-		newPage = Math.min(newPage, Math.ceil(streamers.length / config.pageLimit) - 1 );
-		
+		newPage = Math.min(newPage, Math.ceil(streamers.length / config.pageLimit) - 1);
+
 		// only edit on page change
 		if (newPage == oldPage) return;
-		
-		console.log("[ INFO ] Editing list message to page " + newPage);
+
+		log.log('INFO', "Editing list message to page " + newPage);
 
 		replyMsg.edit(generateEmbed(message, streamers, newPage));
 		reaction.remove(reaction.users.filter(u => !u.bot).first());
 	});
-	
+
 	reactCollector.on('end', collected => {
 		replyMsg.clearReactions();
 	});

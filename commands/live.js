@@ -1,5 +1,6 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
+const log = require('../utils/log.js');
 
 const options = {
 
@@ -13,7 +14,7 @@ const options = {
 
 async function execute(message, args, streamers) {
 
-	console.log("[ INFO ] Showing live streamers");
+	log.log('INFO', "Showing live streamers");
 
 	const streamingRole = message.guild.roles.get(config.roles.streaming);
 	const streaming = streamingRole ? streamingRole.members : false;

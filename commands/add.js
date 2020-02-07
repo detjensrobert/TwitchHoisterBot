@@ -1,6 +1,7 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
 const fs = require('fs');
+const log = require('../utils/log.js');
 
 const options = {
 
@@ -38,7 +39,7 @@ async function execute(message, args, streamers) {
 
 	const member = await message.guild.fetchMember(user);
 
-	console.log(`[ INFO ] Adding user ${user.username} to streamer list`);
+	log.log('INFO', `Adding user ${user.username} to streamer list`);
 
 	// streamer list is nested arrays: [ [userid, tw usern], ... ]
 	streamers.push([user.id, ""]);

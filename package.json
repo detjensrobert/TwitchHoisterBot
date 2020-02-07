@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/detjensrobert/TwitchHoisterBot#readme",
   "dependencies": {
+    "chalk": "^3.0.0",
     "discord.js": "^11.5.1",
     "pm2": "^4.2.2"
   },

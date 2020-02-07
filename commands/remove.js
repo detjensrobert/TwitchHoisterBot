@@ -1,6 +1,7 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
 const fs = require('fs');
+const log = require('../utils/log.js');
 
 const options = {
 
@@ -38,7 +39,7 @@ async function execute(message, args, streamers) {
 
 	const member = await message.guild.fetchMember(user);
 
-	console.log(`[ INFO ] Removing user ${user.username} from streamer list`);
+	log.log('INFO', `Removing user ${user.username} from streamer list`);
 
 	// remove pair at index of id
 	streamers.splice(streamers.findIndex(elem => elem[0] == user.id), 1);

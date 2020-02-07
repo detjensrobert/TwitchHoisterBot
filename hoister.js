@@ -1,6 +1,7 @@
 console.log("[ START ] Starting up...");
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const log = require('./utils/log.js');
 
 // file i/o
 const fs = require('fs');
@@ -12,11 +13,11 @@ const config = require('./config.json');
 // load saved streamers from file (or template if no file)
 let streamers;
 if (fs.existsSync('./streamers.json')) {
-	console.log("[ START ] Loading streamers from file...");
+	log.log('START', "Loading streamers from file...");
 	streamers = require('./streamers.json');
 }
 else {
-	console.log("[ START ] No streamers file found, using blank template...");
+	log.log('START', "No streamers file found, using blank template...");
 	streamers = [];
 }
 
@@ -28,7 +29,7 @@ for (const file of commandFiles) {
 	const command = require('./commands/' + file);
 	client.commands.set(command.name, command);
 
-	console.log("[ START ] Added command: " + command.name);
+	log.log('START', "Added command: " + command.name);
 }
 
 const cooldowns = new Discord.Collection();
@@ -38,7 +39,7 @@ const cooldowns = new Discord.Collection();
 
 
 client.once('ready', () => {
-	console.log(`[ START ] Ready.`);
+	log.log('START', "Ready.");
 });
 
 client.on('message', message => {
@@ -117,9 +118,9 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
 	// ignore users not being watched (not in array)
 	if (index == -1) return;
-	
+
 	// ignore non-game states
-	if (!oldMember.presence.game && !newMember.presence.game)
+	if (!oldMember.presence.game && !newMember.presence.game) return;
 
 	// log old and new presence
 	console.log("\n\npresence update for " + oldMember.user.username);
@@ -136,7 +137,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
 	// if started streaming S&S, add role & set twitch url
 	if (newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
-		console.log(`[ INFO ] ${newMember.user.username} started streaming at ${newMember.presence.game.url}`);
+		log.log('INFO', `${newMember.user.username} started streaming at ${newMember.presence.game.url}`);
 		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
 		streamers[index][1] = newMember.presence.game.url.split('/').pop();
 	}
@@ -144,7 +145,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	// if stopped streaming OR is no longer streaming Pk S&S, remove role
 	if (oldMember.presence.game && oldMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
 		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
-		console.log(`[ INFO ] ${newMember.user.username} stopped streaming`);
+		log.log('INFO', `${newMember.user.username} stopped streaming`);
 		newMember.removeRole(newMember.guild.roles.get(config.roles.streaming));
 	}
 
@@ -154,8 +155,8 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 // ========
 
 // login to Discord
-console.log("[ START ] Logging in to Discord...");
+log.log('START', "Logging in to Discord...");
 client.login(token);
 
 // catch and log promise rejections
-process.on('unhandledRejection', error => console.error('[ ERROR ] Uncaught Promise Rejection!\n', error));
+process.on('unhandledRejection', error => log.log('ERROR', "Uncaught Promise Rejection!\n" + error));
