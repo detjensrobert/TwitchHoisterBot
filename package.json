@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start . --color --name TwitchHoister",
     "stop": "pm2 stop .",
-    "restart": "pm2 restart . --color"
+    "restart": "pm2 restart . --color",
     "fix": "npx eslint . --fix",
     "lint": "npx eslint ."
   },
