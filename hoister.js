@@ -120,7 +120,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	if (index == -1) return;
 
 	// ignore non-game states
-	if (!oldMember.presence.game && !newMember.presence.game) return;
+	if (oldMember.presence.game === null && newMember.presence.game === null) return;
 
 	// log old and new presence
 	console.log("\n\npresence update for " + oldMember.user.username);
