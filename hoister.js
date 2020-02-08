@@ -142,7 +142,6 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
 function logPresence (oldMember, newMember) {
 	// log old and new presence
-	console.log("\n\npresence update for " + oldMember.user.username);
 	console.log("OLD:");
 	console.log({ ...oldMember.presence });
 	if (oldMember.game) {

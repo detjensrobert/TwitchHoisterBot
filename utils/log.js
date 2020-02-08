@@ -7,13 +7,13 @@ function log(type, message) {
 	case 'START':
 		str += c.cyan(type);
 		break;
-	case 'INFO':
+	case ' INFO':
 		str += c.green(type);
 		break;
-	case 'WARN':
+	case ' WARN':
 		str += c.yellow(type);
 		break;
-	case 'ERR':
+	case ' ERR!':
 		str += c.red(type);
 		break;
 	default:
