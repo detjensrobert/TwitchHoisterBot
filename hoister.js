@@ -39,9 +39,11 @@ const cooldowns = new Discord.Collection();
 
 
 client.once('ready', () => {
-
+	
 	// check role on startup
+	log.log('START', `Checking for orphaned stream hoists...`);
 	for (const guild of client.guilds.values()) {
+		log.log('START', `  > in ${guild.name}`);
 		const streamingRole = guild.roles.get(config.roles.streaming);
 		const streaming = streamingRole ? streamingRole.members : false;
 
