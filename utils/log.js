@@ -20,7 +20,7 @@ function log(type, message) {
 		str += c.grey(type);
 	}
 
-	console.log(c.white("[ ")+c.grey(d.toLocaleDateString()) + " " + c.grey(d.toLocaleTimeString())+ str + c.white(" ] ")+c.reset(message));
+	console.log(c.white("[ ") + c.grey(d.toLocaleDateString()) + " " + c.grey(d.toLocaleTimeString()) + str + c.white(" ] ") + c.reset(message));
 }
 
 module.exports.log = log;

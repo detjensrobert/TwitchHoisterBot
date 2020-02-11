@@ -39,6 +39,22 @@ const cooldowns = new Discord.Collection();
 
 
 client.once('ready', () => {
+
+	// check role on startup
+	for (const guild of client.guilds.values()) {
+		const streamingRole = guild.roles.get(config.roles.streaming);
+		const streaming = streamingRole ? streamingRole.members : false;
+
+		if (streaming && streaming.size > 0) {
+			for (const member of streaming.values()) {
+				if (!member.presence.game || member.presence.game.state != 'Pokémon Sword/Shield') {
+					member.removeRole(guild.roles.get(config.roles.streaming));
+				}
+			}
+		}
+	}
+
+
 	log.log('START', "Ready.");
 });
 
@@ -114,16 +130,17 @@ client.on('message', message => {
 // listen for user presence updates
 client.on('presenceUpdate', (oldMember, newMember) => {
 
+	// ignore non-game states
+	if (oldMember.presence.game === null && newMember.presence.game === null) return;
+
 	const index = streamers.findIndex(elem => elem[0] == newMember.id);
 
 	// ignore users not being watched (not in array)
 	if (index == -1) return;
 
-	// ignore non-game states
-	if (oldMember.presence.game === null && newMember.presence.game === null) return;
-
 	// if started streaming S&S, add role & set twitch url
-	if (newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
+	if ((!oldMember.presence.game || oldMember.presence.game.state != 'Pokémon Sword/Shield') &&
+		newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
 		logPresence(oldMember, newMember);
 		log.log('INFO', `${newMember.user.username} started streaming at ${newMember.presence.game.url}`);
 		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
@@ -140,7 +157,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
 });
 
-function logPresence (oldMember, newMember) {
+function logPresence(oldMember, newMember) {
 	// log old and new presence
 	console.log("\nOLD:");
 	console.log({ ...oldMember.presence });
