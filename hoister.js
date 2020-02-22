@@ -143,7 +143,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	// if started streaming S&S, add role & set twitch url
 	if ((!oldMember.presence.game || oldMember.presence.game.state != 'Pokémon Sword/Shield') &&
 		newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
-		logPresence(oldMember, newMember);
+		// ~ logPresence(oldMember, newMember);
 		log.log('INFO', `${newMember.user.username} started streaming at ${newMember.presence.game.url}`);
 		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
 		streamers[index][1] = newMember.presence.game.url.split('/').pop();
@@ -152,7 +152,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	// if stopped streaming OR is no longer streaming Pk S&S, remove role
 	if (oldMember.presence.game && oldMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
 		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
-		logPresence(oldMember, newMember);
+		// ~ logPresence(oldMember, newMember);
 		log.log('INFO', `${newMember.user.username} stopped streaming`);
 		newMember.removeRole(newMember.guild.roles.get(config.roles.streaming));
 	}
