@@ -34,34 +34,32 @@ for (const file of commandFiles) {
 
 const cooldowns = new Discord.Collection();
 
-
-// ========
-
-
 client.once('ready', () => {
-	
 	// check role on startup
 	log.log('START', `Checking for orphaned stream hoists...`);
-	for (const guild of client.guilds.values()) {
+	for (const guild of client.guilds.cache.values()) {
+		while	(!guild.available) { /* wait for guild to become available */ }
 		log.log('START', `  > in ${guild.name}`);
-		const streamingRole = guild.roles.get(config.roles.streaming);
+		const streamingRole = guild.roles.cache.get(config.roles.streaming);
 		const streaming = streamingRole ? streamingRole.members : false;
 
 		if (streaming && streaming.size > 0) {
 			for (const member of streaming.values()) {
-				if (!member.presence.game || member.presence.game.state != 'Pokémon Sword/Shield') {
-					member.removeRole(guild.roles.get(config.roles.streaming));
+				// if stopped streaming, remove streaming role
+				let stream;
+				if (member.presence.activities) stream = member.presence.activities.find(e => e.type == 'STREAMING');
+				if (!stream || !config.games.includes(stream.name)) {
+					log.log('START', `    - ${member.user.username}`);
+					member.roles.remove(member.guild.roles.cache.get(config.roles.streaming));
 				}
 			}
 		}
 	}
 
-
 	log.log('START', "Ready.");
 });
 
 client.on('message', message => {
-
 	// ignore messages that dont start with a valid prefix
 	if (!message.content.startsWith(config.prefix)) return;
 
@@ -86,22 +84,19 @@ client.on('message', message => {
 
 	if (!command) return;
 
-
-	//   ===   CHECK COMMAND OPTIONS   ===
-
-
+	// CHECK COMMAND OPTIONS:
 	// role restricted
-	if (command.roleRestrict && !message.member.roles.has(config.roles[`${command.roleRestrict}`])) return;
+	if (command.roleRestrict && !message.member.roles.cache.has(config.roles[`${command.roleRestrict}`])) return;
 
 	// argument count
 	if (command.minArgs && args.length < command.minArgs) {
-		const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
+		const errEmbed = new Discord.MessageEmbed().setColor(config.colors.error)
 			.setTitle("Oops! Are you missing something?")
 			.addField("Usage:", `\`${config.prefix}${command.name} ${command.usage}\``);
 		return message.channel.send(errEmbed);
 	}
 
-	// == COOLDOWN HANDLING ==
+	// cooldown handling
 	if (command.cooldown) {
 		if (!cooldowns.has(command.name)) {
 			cooldowns.set(command.name, new Discord.Collection());
@@ -114,7 +109,7 @@ client.on('message', message => {
 
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 1000;
-				const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
+				const errEmbed = new Discord.MessageEmbed().setColor(config.colors.error)
 					.setTitle(`Wait ${timeLeft.toFixed(1)} more second(s) to call this again.`);
 				return message.channel.send(errEmbed);
 			}
@@ -125,56 +120,40 @@ client.on('message', message => {
 
 	// since everything's ok, execute command
 	command.execute(message, args, streamers);
-
 });
 
-
 // listen for user presence updates
-client.on('presenceUpdate', (oldMember, newMember) => {
-
-	// ignore non-game states
-	if (oldMember.presence.game === null && newMember.presence.game === null) return;
-
-	const index = streamers.findIndex(elem => elem[0] == newMember.id);
-
+client.on('presenceUpdate', (oldPresence, newPresence) => {
+	// find user id in streamers
+	const index = streamers.findIndex(elem => elem[0] == newPresence.user.id);
 	// ignore users not being watched (not in array)
 	if (index == -1) return;
 
-	// if started streaming S&S, add role & set twitch url
-	if ((!oldMember.presence.game || oldMember.presence.game.state != 'Pokémon Sword/Shield') &&
-		newMember.presence.game && newMember.presence.game.type == 1 && newMember.presence.game.state == 'Pokémon Sword/Shield') {
-		// ~ logPresence(oldMember, newMember);
-		log.log('INFO', `${newMember.user.username} started streaming at ${newMember.presence.game.url}`);
-		newMember.addRole(newMember.guild.roles.get(config.roles.streaming));
-		streamers[index][1] = newMember.presence.game.url.split('/').pop();
+	// find streaming activities
+	let oldStream, newStream;
+	if (oldPresence && oldPresence.activities) oldStream = oldPresence.activities.find(e => e.type == 'STREAMING');
+	if (newPresence && newPresence.activities) newStream = newPresence.activities.find(e => e.type == 'STREAMING');
+
+	// ignore if not streaming at all
+	if (!oldStream && !newStream) return;
+
+	// if started streaming a game, add role & set twitch url
+	if (newStream && (!config.gameRestrict || config.games.includes(newStream.name))
+	&& (!oldStream || (!config.gameRestrict || config.games.includes(oldStream.name)))) {
+		log.log('INFO', `${newPresence.user.username} started streaming at ${newStream.url}`);
+		newPresence.member.roles.add(config.roles.streaming);
+		streamers[index][1] = newStream.url;
+		return;
 	}
 
-	// if stopped streaming OR is no longer streaming Pk S&S, remove role
-	if (oldMember.presence.game && oldMember.presence.game.type == 1 && oldMember.presence.game.state == 'Pokémon Sword/Shield' &&
-		(!newMember.presence.game || newMember.presence.game.state != 'Pokémon Sword/Shield')) {
-		// ~ logPresence(oldMember, newMember);
-		log.log('INFO', `${newMember.user.username} stopped streaming`);
-		newMember.removeRole(newMember.guild.roles.get(config.roles.streaming));
+	// if stopped streaming, remove streaming role
+	if (oldStream && (!config.gameRestrict || config.games.includes(oldStream.name))
+	&& (!newStream || (!config.gameRestrict || config.games.includes(newStream.name)))) {
+		log.log('INFO', `${oldPresence.user.username} stopped streaming`);
+		oldPresence.member.roles.remove(config.roles.streaming);
+		return;
 	}
-
 });
-
-function logPresence(oldMember, newMember) {
-	// log old and new presence
-	console.log("\nOLD:");
-	console.log({ ...oldMember.presence });
-	if (oldMember.game) {
-		console.log({ ...oldMember.presence.game });
-	}
-	console.log("\nNEW:");
-	console.log({ ...newMember.presence });
-	if (newMember.game) {
-		console.log({ ...newMember.presence.game });
-	}
-}
-
-
-// ========
 
 // login to Discord
 log.log('START', "Logging in to Discord...");

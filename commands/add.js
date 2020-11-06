@@ -4,7 +4,6 @@ const fs = require('fs');
 const log = require('../utils/log.js');
 
 const options = {
-
 	name: 'add',
 	aliases: ['a', 'verify', 'v'],
 
@@ -22,7 +21,7 @@ async function execute(message, args, streamers) {
 
 	// if no user mentioned
 	if (!message.mentions.users.size) {
-		const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
+		const errEmbed = new Discord.MessageEmbed().setColor(config.colors.error)
 			.setTitle("Oops! User mention not recognised.")
 			.addField("Usage:", `\`${config.prefix}${this.name} ${this.usage}\``);
 		return message.channel.send(errEmbed);
@@ -32,12 +31,12 @@ async function execute(message, args, streamers) {
 
 	// if streamer is already in list
 	if (streamers.find(elem => elem[0] == user.id)) {
-		const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
-			.setTitle("Oops! This streamer's already been verified.");
+		const errEmbed = new Discord.MessageEmbed().setColor(config.colors.warn)
+			.setTitle("This streamer has already been added.");
 		return message.channel.send(errEmbed);
 	}
 
-	const member = await message.guild.fetchMember(user);
+	const member = await message.guild.members.fetch(user);
 
 	log.log('INFO', `Adding user ${user.username} to streamer list`);
 
@@ -48,8 +47,8 @@ async function execute(message, args, streamers) {
 	// need to get username/nicknames first tho
 	const names = new Map();
 	for (let i = 0; i < streamers.length; i++) {
-		const u = await message.client.fetchUser(streamers[i][0]);
-		const m = await message.guild.fetchMember(u);
+		const u = await message.client.users.fetch(streamers[i][0]);
+		const m = await message.guild.members.fetch(u);
 		names.set(streamers[i][0], m ? m.displayName : u.username);
 	}
 
@@ -69,7 +68,7 @@ async function execute(message, args, streamers) {
 	// save new array to file
 	fs.writeFileSync('./streamers.json', JSON.stringify(streamers, null, 2));
 
-	const replyEmbed = new Discord.RichEmbed().setColor(config.colors.success)
+	const replyEmbed = new Discord.MessageEmbed().setColor(config.colors.success)
 		.setTitle(`Added ${member ? member.displayName : user.username} to the verified streamer list.`);
 	message.channel.send(replyEmbed);
 }
