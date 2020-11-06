@@ -22,7 +22,7 @@ async function execute(message, args, streamers) {
 
 	// if no user mentioned
 	if (!message.mentions.users.size) {
-		const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
+		const errEmbed = new Discord.MessageEmbed().setColor(config.colors.error)
 			.setTitle("Oops! User mention not recognised.")
 			.addField("Usage:", `\`${config.prefix}${this.name} ${this.usage}\``);
 		return message.channel.send(errEmbed);
@@ -32,12 +32,12 @@ async function execute(message, args, streamers) {
 
 	// if user is not in list
 	if (!streamers.find(elem => elem[0] == user.id)) {
-		const errEmbed = new Discord.RichEmbed().setColor(config.colors.error)
+		const errEmbed = new Discord.MessageEmbed().setColor(config.colors.error)
 			.setTitle("Oops! User is not in the streamer list.");
 		return message.channel.send(errEmbed);
 	}
 
-	const member = await message.guild.fetchMember(user);
+	const member = await message.guild.members.fetch(user);
 
 	log.log('INFO', `Removing user ${user.username} from streamer list`);
 
@@ -47,7 +47,7 @@ async function execute(message, args, streamers) {
 	// save new array to file
 	fs.writeFileSync('./streamers.json', JSON.stringify(streamers, null, 2));
 
-	const replyEmbed = new Discord.RichEmbed().setColor(config.colors.success)
+	const replyEmbed = new Discord.MessageEmbed().setColor(config.colors.success)
 		.setTitle(`Removed ${member ? member.displayName : user.username} from the streamer list.`);
 	return message.channel.send(replyEmbed);
 

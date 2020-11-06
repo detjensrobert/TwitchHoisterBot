@@ -1,19 +1,22 @@
 {
 	"prefix": "!s ",
-	
+
+	"gameRestrict": false,
+	"games": [
+	],
+
+	"roles": {
+		"moderator": "MODERATOR_ROLE_ID",
+		"streaming": "STREAMING_ROLE_ID"
+	},
+
 	"pageLimit": 5,
-	
+
 	"colors": {
 		"success": "#4CAF50",
 		"error": "#f44336",
 		"info": "#2196F3",
 		"warn": "#FFC107",
 		"twitch": "#9146ff"
-	},
-	
-	"roles": {
-		"moderator": "652410392038866944",
-		"streaming": "669033737413066771"
 	}
-
 }

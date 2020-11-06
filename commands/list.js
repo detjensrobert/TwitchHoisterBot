@@ -16,7 +16,6 @@ const options = {
 };
 
 async function execute(message, args, streamers) {
-
 	// if page specified, use that; else first page
 	let page = Number.parseInt(args.shift()) - 1;
 	if (isNaN(page)) page = 0;
@@ -58,23 +57,28 @@ async function execute(message, args, streamers) {
 	});
 
 	reactCollector.on('end', collected => {
-		replyMsg.clearReactions();
+		replyMsg.reactions.removeAll();
 	});
 }
 
 function generateEmbed(message, streamers, page) {
 
-	const listEmbed = new Discord.RichEmbed().setColor(config.colors.twitch)
+	const listEmbed = new Discord.MessageEmbed().setColor(config.colors.twitch)
 		.setTitle(`Streamer List (page ${page + 1} / ${Math.ceil(streamers.length / config.pageLimit)})`);
 
-	const streaming = message.guild.roles.get(config.roles.streaming).members;
+	// if no streamers configured
+	if (streamers.length == 0) {
+		return listEmbed.addField("No streamers added", `Use \`${config.prefix}add @user\` to get started!`);
+	}
+
+	const streaming = message.guild.roles.cache.get(config.roles.streaming).members;
 
 	if (streaming.size > 0) {
 		let streamingStr = "";
 
 		for (const id of streaming.keys()) {
-			const usn = streamers.find(elem => elem[0] == id)[1];
-			streamingStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
+			const url = streamers.find(elem => elem[0] == id)[1];
+			streamingStr += `<@${id}>: [${url}](${url}})\n\n`;
 		}
 		listEmbed.addField("Currently Streaming", streamingStr);
 	}
@@ -86,7 +90,7 @@ function generateEmbed(message, streamers, page) {
 			allStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
 		}
 		else {
-			allStr += `<@${id}>: [ twitch url not found ]\n\n`;
+			allStr += `<@${id}>: [ url not found ]\n\n`;
 		}
 	}
 

@@ -13,30 +13,28 @@ const options = {
 };
 
 async function execute(message, args, streamers) {
-
 	log.log('INFO', "Showing live streamers");
 
-	const streamingRole = message.guild.roles.get(config.roles.streaming);
+	const streamingRole = message.guild.roles.cache.get(config.roles.streaming);
 	const streaming = streamingRole ? streamingRole.members : false;
 
 	let descStr = "";
 
 	if (streaming && streaming.size > 0) {
 		for (const id of streaming.keys()) {
-			const usn = streamers.find(elem => elem[0] == id)[1];
-			descStr += `<@${id}>: [${usn}](https://twitch.tv/${usn})\n\n`;
+			const url = streamers.find(elem => elem[0] == id)[1];
+			descStr += `<@${id}>: [${url}](${url})\n\n`;
 		}
 	}
 	else {
-		descStr = "*There's noone live right now. :(*";
+		descStr = "*Noone is live right now. :(*";
 	}
 
-	const listEmbed = new Discord.RichEmbed().setColor(config.colors.twitch)
+	const listEmbed = new Discord.MessageEmbed().setColor(config.colors.twitch)
 		.setTitle("Currently Streaming")
 		.setDescription(descStr);
 
 	message.channel.send(listEmbed);
-
 }
 
 module.exports = options;
