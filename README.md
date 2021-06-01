@@ -12,7 +12,8 @@ When a user goes live and is set to be tracked, the bot gives them a hoisted rol
 
 The hoist can optionally be restricted to specific games in the config file.
 
-> **Note:** This bot is not multi-guild aware! If this bot is added to multiple servers, things may not work. If you want to use this bot in multiple servers, use a separate instance for each.
+> **Note:** This bot is not multi-guild aware! If this bot is added to multiple servers, things may not work. If you
+> want to use this bot in multiple servers, use a separate instance for each.
 
 ------------
 
@@ -40,7 +41,8 @@ The hoist can optionally be restricted to specific games in the config file.
 
 Main file is `hoister.js`.  `npm start` will start the bot.
 
-> **Note:** This bot requires the Presence privileged gateway intent. You can enable this on your [bot application page](https://discord.com/developers/applications).
+> **Note:** This bot requires the Presence privileged gateway intent. You can enable this on your [bot application
+> page](https://discord.com/developers/applications).
 
 Bot token goes in `token.json`. Create if not present:
 

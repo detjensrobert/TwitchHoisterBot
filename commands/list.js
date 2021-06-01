@@ -29,11 +29,11 @@ async function execute(message, args, streamers) {
 
 
 	// allow paging for 1 min
-	const reactFilter = (reaction, user) => !user.bot && (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️');
+	const reactFilter = (reaction, user) => user.id == message.author.id && (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️');
 	const reactCollector = replyMsg.createReactionCollector(reactFilter, { time: 60 * 1000 });
 
-	reactCollector.on('collect', (reaction, collector) => {
-		const oldPage = reaction.message.embeds[0].title.match(/\d+ \/ \d+/)[0].match(/^\d+/)[0] - 1;
+	reactCollector.on('collect', (reaction, reaction_user) => {
+		const oldPage = reaction.message.embeds[0].footer.text.match(/\d+ \/ \d+/)[0].match(/^\d+/)[0] - 1;
 		let newPage = oldPage;
 
 		// would use boolean addition but it didnt work
@@ -44,19 +44,17 @@ async function execute(message, args, streamers) {
 			newPage--;
 		}
 
-		newPage = Math.max(newPage, 0); // enforce limits
+		// enforce limits
+		newPage = Math.max(newPage, 0);
 		newPage = Math.min(newPage, Math.ceil(streamers.length / config.pageLimit) - 1);
-
-		// only edit on page change
-		if (newPage == oldPage) return;
 
 		log.log('INFO', "Editing list message to page " + newPage);
 
 		replyMsg.edit(generateEmbed(message, streamers, newPage));
-		reaction.remove(reaction.users.filter(u => !u.bot).first());
+		replyMsg.reactions.resolve(reaction).users.remove(reaction_user.id);
 	});
 
-	reactCollector.on('end', collected => {
+	reactCollector.on('end', (_collected, _reason) => {
 		replyMsg.reactions.removeAll();
 	});
 }
@@ -64,7 +62,8 @@ async function execute(message, args, streamers) {
 function generateEmbed(message, streamers, page) {
 
 	const listEmbed = new Discord.MessageEmbed().setColor(config.colors.twitch)
-		.setTitle(`Streamer List (page ${page + 1} / ${Math.ceil(streamers.length / config.pageLimit)})`);
+		.setTitle("Streamer List")
+		.setFooter(`*Page ${page + 1} of ${Math.ceil(streamers.length / config.pageLimit)}*`);
 
 	// if no streamers configured
 	if (streamers.length == 0) {
