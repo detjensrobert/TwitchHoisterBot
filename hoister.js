@@ -38,7 +38,7 @@ client.once('ready', () => {
 	// check role on startup
 	log.log('START', `Checking for orphaned stream hoists...`);
 	for (const guild of client.guilds.cache.values()) {
-		while	(!guild.available) { /* wait for guild to become available */ }
+		while (!guild.available) { /* wait for guild to become available */ }
 		log.log('START', `  > in ${guild.name}`);
 		const streamingRole = guild.roles.cache.get(config.roles.streaming);
 		const streaming = streamingRole ? streamingRole.members : false;
@@ -47,7 +47,7 @@ client.once('ready', () => {
 			for (const member of streaming.values()) {
 				// if stopped streaming, remove streaming role
 				let stream;
-				if (member.presence.activities) stream = member.presence.activities.find(e => e.type == 'STREAMING');
+				if (member.presence.activities) { stream = member.presence.activities.find(e => e.type == 'STREAMING'); }
 				if (!stream || !config.games.includes(stream.name)) {
 					log.log('START', `    - ${member.user.username}`);
 					member.roles.remove(member.guild.roles.cache.get(config.roles.streaming));
@@ -80,7 +80,7 @@ client.on('message', message => {
 
 	// get command from name or alias
 	const command = client.commands.get(commandName) ||
-					client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+		client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (!command) return;
 
@@ -139,7 +139,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
 
 	// if started streaming a game, add role & set twitch url
 	if (newStream && (!config.gameRestrict || config.games.includes(newStream.name))
-	&& (!oldStream || (!config.gameRestrict || config.games.includes(oldStream.name)))) {
+		&& (!oldStream || (!config.gameRestrict || config.games.includes(oldStream.name)))) {
 		log.log('INFO', `${newPresence.user.username} started streaming at ${newStream.url}`);
 		newPresence.member.roles.add(config.roles.streaming);
 		streamers[index][1] = newStream.url;
@@ -148,7 +148,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
 
 	// if stopped streaming, remove streaming role
 	if (oldStream && (!config.gameRestrict || config.games.includes(oldStream.name))
-	&& (!newStream || (!config.gameRestrict || config.games.includes(newStream.name)))) {
+		&& (!newStream || (!config.gameRestrict || config.games.includes(newStream.name)))) {
 		log.log('INFO', `${oldPresence.user.username} stopped streaming`);
 		oldPresence.member.roles.remove(config.roles.streaming);
 		return;

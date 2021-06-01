@@ -28,7 +28,7 @@ async function execute(message) {
 
 	const helpEmbed = new Discord.MessageEmbed().setColor(config.colors.info)
 		.setAuthor(`${message.client.user.username} Help`, message.client.user.displayAvatarURL())
-		.setFooter(`${message.client.user.username} created by WholeWheatBagels`, 'https://cdn.discordapp.com/avatars/197460469336899585/efb49d183b81f30c42b25517e057a704.png');
+		.setFooter(`${message.client.user.username} created by WholeWheatBagels`, 'https://cdn.discordapp.com/avatars/197460469336899585/ed9b6973b9a2c63230b08c0850e740a4.png');
 
 	commands.forEach((cmd) => {
 		// show if no restriction || only show role-restricted commands if member is in a server and they have that role

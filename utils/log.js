@@ -1,7 +1,6 @@
 const c = require('chalk');
 
 async function log(type, message) {
-	const d = new Date();
 	let str;
 	switch (type) {
 	case 'START':
