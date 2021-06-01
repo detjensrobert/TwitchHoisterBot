@@ -40,7 +40,8 @@ async function execute(message, args, streamers) {
 
 	log.log('INFO', `Adding user ${user.username} to streamer list`);
 
-	// streamer list is nested arrays: [ [userid, tw usern], ... ]
+	// streamer list is nested arrays: [ [discord userid, twitch username], ... ]
+	// twitch username will be set the next time the user streams
 	streamers.push([user.id, ""]);
 
 	// sort streamer array by discord nickname
@@ -48,22 +49,12 @@ async function execute(message, args, streamers) {
 	const names = new Map();
 	for (let i = 0; i < streamers.length; i++) {
 		const u = await message.client.users.fetch(streamers[i][0]);
-		const m = await message.guild.members.fetch(u);
+		// if no member available, catch and return undefined
+		const m = await message.guild.members.fetch(u.id).catch(() => undefined);
 		names.set(streamers[i][0], m ? m.displayName : u.username);
 	}
 
-	let aname, bname;
-	streamers.sort((a, b) => {
-		aname = names.get(a[0]);
-		bname = names.get(b[0]);
-
-		if (aname < bname) {
-			return -1;
-		}
-		else {
-			return 1;
-		}
-	});
+	streamers.sort((a, b) => { names.get(a[0]) < names.get(b[0]) ? -1 : 1; });
 
 	// save new array to file
 	fs.writeFileSync('./streamers.json', JSON.stringify(streamers, null, 2));
