@@ -19,10 +19,10 @@
   },
   "homepage": "https://github.com/detjensrobert/TwitchHoisterBot#readme",
   "dependencies": {
-    "chalk": "^4.1.1",
-    "discord.js": "^12.5.3"
+    "chalk": "*",
+    "discord.js": "~12"
   },
   "devDependencies": {
-    "eslint": "^7.27.0"
+    "eslint": "*"
   }
 }
