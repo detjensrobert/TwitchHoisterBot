@@ -41,7 +41,7 @@ The hoist can optionally be restricted to specific games in the config file.
 
 Main file is `hoister.js`.  `npm start` will start the bot.
 
-> **Note:** This bot requires the Presence privileged gateway intent. You can enable this on your [bot application
+> ⚠️ **Note:** This bot requires the Presence privileged gateway intent. You can enable this on your [bot application
 > page](https://discord.com/developers/applications).
 
 Bot token goes in `token.json`. Create if not present:
@@ -52,7 +52,9 @@ Bot token goes in `token.json`. Create if not present:
 }
 ```
 
-A partial example of `config.json` is provided below. Be sure to set the role IDs and optionally the game list. If you do not want the hoist to be restricted to specific games, set `gameRestrict` to `false`.
+A partial example of `config.json` is provided below. Be sure to set the role IDs and optionally the game list. If you
+do not want the hoist to be restricted to specific games, set `gameRestrict` to `false`. Make sure the games in the list
+match the name of the game as shown in the user popout!
 
 ```json
 {
@@ -71,3 +73,6 @@ A partial example of `config.json` is provided below. Be sure to set the role ID
   }
 }
 ```
+
+> ⚠️ **Note:** The streaming role **must be below the bot's role** in order for the bot to be able to assign it!
+> ![](https://i.imgur.com/1JV0iMa.png)
